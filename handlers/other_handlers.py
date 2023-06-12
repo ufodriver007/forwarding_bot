@@ -6,7 +6,7 @@ from models import db
 
 # Инициализируем роутер
 router_for_channels_transitions: Router = Router()
-router_for_channels_transitions.my_chat_member.filter(F.chat.type.in_({"group", "supergroup"}))
+router_for_channels_transitions.my_chat_member.filter(F.chat.type.in_({"group", "supergroup", "channel"}))
 
 
 @router_for_channels_transitions.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=JOIN_TRANSITION))

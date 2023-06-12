@@ -12,7 +12,7 @@ async def filter_parser(message: Message) -> bool:
             rule = channel[2]
 
     if not rule:
-        return True
+        return False
     elif rule.startswith('contains'):
         return rule.split()[1] in message.text
     elif rule.startswith('not_contains'):

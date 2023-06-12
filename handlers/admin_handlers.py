@@ -2,7 +2,7 @@ from aiogram import Router, Bot
 from filters.custom_filters import IsAdmin, IsInfoText, ReplacementRule
 from aiogram.types import Message, ChatInviteLink
 from aiogram.filters import Command, CommandStart
-from keyboards.chats_choosing import chats_kb_builder
+from keyboards.chats_choosing import inl_add_keyboard
 from keyboards.admins_chats_choosing import admins_chats_kb_builder
 from keyboards.simple_row import make_simple_keyboard, skip_keyboard
 from aiogram.filters import Text
@@ -42,7 +42,7 @@ async def forwarding_command(message: Message, state: FSMContext):
     await message.answer(text='Создание пересылки. Для начала выберите канал откуда нужно пересылать сообщения. Комманда /cancel для отмены')
     chats = get_all_chats()
     for chat in chats:
-        await message.answer(text=chat[0], reply_markup=chats_kb_builder.as_markup())
+        await message.answer(text=f'{chat[0]} {chat[1]}', reply_markup=inl_add_keyboard)
 
     await state.set_state(SetConfig.cf_choosing_from_channel)
 
@@ -51,23 +51,23 @@ async def forwarding_command(message: Message, state: FSMContext):
 @router.callback_query(SetConfig.cf_choosing_from_channel)
 async def forwarding_dialog(callback: CallbackQuery, state: FSMContext):
     await callback.answer()                                 # убирает часики.
-    await state.update_data(from_channel=callback.data)
+    await state.update_data(from_channel=callback.message.text.split()[1])
     await callback.message.answer(text='Теперь нужно выбрать куда будут пересылаться сообщения. Комманда /cancel для отмены')
     await callback.message.delete()                         # Удаляем сообщение, в котором была нажата кнопка
 
     await callback.message.answer(text='В мой чат', reply_markup=admins_chats_kb_builder.as_markup())
     chats = get_all_chats()
     for chat in chats:
-        await callback.message.answer(text=chat[0], reply_markup=chats_kb_builder.as_markup())
+        await callback.message.answer(text=f'{chat[0]} {chat[1]}', reply_markup=inl_add_keyboard)
 
     await state.set_state(SetConfig.cf_filter_in)
 
 
-# продолдение диалога создания перенаправления
+# продолжение диалога создания перенаправления
 @router.callback_query(SetConfig.cf_filter_in)
 async def forwarding_dialog(callback: CallbackQuery, state: FSMContext):
     await callback.answer()                                 # убирает часики.
-    await state.update_data(to_channel=callback.data)
+    await state.update_data(to_channel=callback.message.text.split()[1])
     await callback.message.answer(text='Что будем пересылать? Варианты фильтрации:\n'
                                        'contains <текст>\n'
                                        'not_contains <текст>\n'
@@ -159,7 +159,7 @@ async def other_commands(message: Message, bot: Bot):
     target = ''
     filter_out = ''
     for channel in channels:
-        if int(channel[0]) == message.chat.id:  # ('442689577', None, None, None)
+        if int(channel[0]) == message.chat.id:  # ('442689577', '43243244', 'contains astra', None, 2)
             target = channel[1]
             filter_out = channel[3]
 
@@ -173,3 +173,4 @@ async def other_commands(message: Message, bot: Bot):
         await send_to_admin(f'От {message.from_user.first_name} {message.from_user.last_name if message.from_user.last_name is not None else ""}: {text}', bot)
     else:
         await bot.send_message(chat_id=int(target), text=f'От {message.from_user.first_name} {message.from_user.last_name if message.from_user.last_name is not None else ""}: {text}')
+
