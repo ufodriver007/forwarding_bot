@@ -42,7 +42,6 @@ class ReplacementRule(BaseFilter):
 
 class FilterIn(BaseFilter):
     async def __call__(self, message: Message) -> bool:
-        if len(message.text.split()) == 2:
-            if message.text.split()[0] in ['contains', 'not_contains', 'starts', 'ends']:
-                return True
+        if message.text.split()[0] in ['contains', 'not_contains', 'starts', 'ends']:
+            return True
         return False

@@ -14,6 +14,7 @@ from aiogram.fsm.context import FSMContext
 from states.forwarding_states import SetConfig
 from aiogram.types import CallbackQuery
 from keyboards.chats_choosing import inl_del_keyboard
+from create_bot import config
 
 
 # Инициализируем роутер
@@ -55,7 +56,7 @@ async def forwarding_dialog(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(text='Теперь нужно выбрать куда будут пересылаться сообщения. Комманда /cancel для отмены')
     await callback.message.delete()                         # Удаляем сообщение, в котором была нажата кнопка
 
-    await callback.message.answer(text='В мой чат', reply_markup=admins_chats_kb_builder.as_markup())
+    await callback.message.answer(text='В мой чат', reply_markup=inl_add_keyboard)
     chats = get_all_chats()
     for chat in chats:
         await callback.message.answer(text=f'{chat[0]} {chat[1]}', reply_markup=inl_add_keyboard)
@@ -67,13 +68,17 @@ async def forwarding_dialog(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(SetConfig.cf_filter_in)
 async def forwarding_dialog(callback: CallbackQuery, state: FSMContext):
     await callback.answer()                                 # убирает часики.
-    await state.update_data(to_channel=callback.message.text.split()[1])
+    if callback.message.text.split()[1] == 'мой':
+        admins = [int(x) for x in config.admin.telegram_id.split(',')]
+        await state.update_data(to_channel=admins[0])
+    else:
+        await state.update_data(to_channel=callback.message.text.split()[1])
     await callback.message.answer(text='Что будем пересылать? Варианты фильтрации:\n'
-                                       'contains <текст>\n'
-                                       'not_contains <текст>\n'
-                                       'starts <текст>\n'
-                                       'ends <текст>\n'
-                                       'Комманда /cancel для отмены')
+                                       'contains <i>текст</i>\n'
+                                       'not_contains <i>текст</i>\n'
+                                       'starts <i>текст</i>\n'
+                                       'ends <i>текст</i>\n'
+                                       'Комманда /cancel для отмены', parse_mode='HTML')
 
     await callback.message.delete()                         # Удаляем сообщение, в котором была нажата кнопка
     await state.set_state(SetConfig.cf_filter_in)
