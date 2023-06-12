@@ -96,11 +96,11 @@ async def forwarding_dialog(message: Message, state: FSMContext):
 @router.message(SetConfig.cf_filter_in)
 async def forwarding_dialog(message: Message, state: FSMContext):
     await message.answer(text='Неверно введены данные. Варианты фильтрации:\n'
-                              'contains <текст>\n'
-                              'not_contains <текст>\n'
-                              'starts <текст>\n'
-                              'ends <текст>\n'
-                              'Комманда /cancel для отмены')
+                              'contains <i>текст</i>\n'
+                              'not_contains <i>текст</i>\n'
+                              'starts <i>текст</i>\n'
+                              'ends <i>текст</i>\n'
+                              'Комманда /cancel для отмены', parse_mode='HTML')
     await state.set_state(SetConfig.cf_filter_in)
 
 
@@ -177,5 +177,5 @@ async def other_commands(message: Message, bot: Bot):
     if not target:
         await send_to_admin(f'От {message.from_user.first_name} {message.from_user.last_name if message.from_user.last_name is not None else ""}: {text}', bot)
     else:
-        await bot.send_message(chat_id=int(target), text=f'От {message.from_user.first_name} {message.from_user.last_name if message.from_user.last_name is not None else ""}: {text}')
+        await bot.send_message(chat_id=int(target), text=text)
 
