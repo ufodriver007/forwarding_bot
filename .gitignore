@@ -1,6 +1,0 @@
-.env
-.idea/
-venv/
-__pycache__/
-sf_agent_db.sqlite
-
