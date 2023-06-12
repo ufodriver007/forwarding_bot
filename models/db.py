@@ -8,10 +8,16 @@ cursor = db.cursor()
 cursor.execute('''
                CREATE TABLE IF NOT EXISTS channels (
                id INTEGER PRIMARY KEY,
-                from_channel TEXT NOT NULL UNIQUE,
+                from_channel TEXT NOT NULL,
                 to_channel TEXT,
                 filter_in TEXT,
                 filter_out TEXT)''')
+
+cursor.execute('''
+               CREATE TABLE IF NOT EXISTS chats (
+               id INTEGER PRIMARY KEY,
+                chat TEXT NOT NULL,
+                name TEXT)''')
 
 # выполнить запросы(только для меняющих базу)
 db.commit()
