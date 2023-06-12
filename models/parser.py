@@ -16,9 +16,9 @@ async def filter_parser(message: Message) -> bool:
     if not rule:
         return False
     elif rule.startswith('contains'):
-        return rule[9:] in message.text
+        return rule[9:].lower() in message.text.lower()
     elif rule.startswith('not_contains'):
-        return not (rule[13:] in message.text)
+        return not (rule[13:].lower() in message.text.lower())
     elif rule.startswith('starts'):
         return message.text.startswith(rule[7:])
     elif rule.startswith('ends'):
